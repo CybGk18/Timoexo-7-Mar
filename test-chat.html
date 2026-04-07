@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat Test</title>
+  </head>
+  <body>
+    <h1>Chat Test</h1>
+    <form id="chatForm">
+      <input type="text" id="messageInput" placeholder="Enter your message" />
+      <button type="submit">Send</button>
+    </form>
+    <div id="response"></div>
+
+    <script>
+      document
+        .getElementById("chatForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const message = document.getElementById("messageInput").value;
+          const responseDiv = document.getElementById("response");
+
+          try {
+            const response = await fetch("http://127.0.0.1:5000/chat", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ message }),
+            });
+
+            const data = await response.json();
+            responseDiv.innerHTML = `<p><strong>Response:</strong> ${data.response}</p>`;
+          } catch (error) {
+            responseDiv.innerHTML = `<p><strong>Error:</strong> ${error.message}</p>`;
+          }
+        });
+    </script>
+  </body>
+</html>

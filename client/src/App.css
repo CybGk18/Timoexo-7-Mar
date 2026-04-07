@@ -1,0 +1,122 @@
+/* Chatbot Button */
+.chatbot-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0d9488, #1e3a8a);
+  color: white;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(13, 148, 136, 0.35);
+  transition: all 0.3s ease-in-out;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.chatbot-button:hover {
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 8px 18px rgba(30, 58, 138, 0.4);
+}
+
+.chatbot-button:focus {
+  outline: 2px solid #14b8a6;
+  outline-offset: 3px;
+}
+
+/* Custom CSS Variables for T-imoexo Brand Theme */
+:root {
+  --brand-teal: #0d9488;
+  --brand-navy: #1e3a8a;
+  --accent-teal: #14b8a6;
+  --soft-blue: #e0f2fe;
+  --light-grey: #f9fafb;
+  --medium-grey: #cbd5e1;
+  --dark-grey: #1e293b;
+  --white: #ffffff;
+  --light-blue: #bae6fd;
+  --sky-blue: #7dd3fc;
+  --grey-blue: #e2e8f0;
+}
+
+/* Enhanced Chatbot Panel Styling */
+.chatbot-panel {
+  background: var(--light-grey);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  font-family: "Inter", sans-serif;
+  color: var(--dark-grey);
+}
+
+.chatbot-header {
+  background: linear-gradient(90deg, var(--brand-teal), var(--brand-navy));
+  color: var(--white);
+  font-weight: 600;
+  padding: 1rem;
+  border-radius: 16px 16px 0 0;
+}
+
+.chatbot-message.bot {
+  background-color: var(--soft-blue);
+  color: var(--dark-grey);
+  border-radius: 18px 18px 18px 4px;
+}
+
+.chatbot-message.user {
+  background-color: var(--brand-teal);
+  color: var(--white);
+  border-radius: 18px 18px 4px 18px;
+}
+
+/* Enhanced Drawer Styling */
+.chatbot-drawer {
+  background: var(--white);
+  border-left: 1px solid var(--grey-blue);
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.1);
+}
+
+.chatbot-drawer-header {
+  background: linear-gradient(90deg, var(--brand-teal), var(--brand-navy));
+  color: var(--white);
+  padding: 1rem;
+}
+
+.chatbot-input-area {
+  background: var(--white);
+  border-top: 1px solid var(--grey-blue);
+  padding: 1rem;
+}
+
+.chatbot-textarea {
+  background: var(--light-grey);
+  border: 1px solid var(--grey-blue);
+  border-radius: 12px;
+  padding: 0.75rem;
+  resize: none;
+}
+
+.chatbot-send-button {
+  background: linear-gradient(135deg, var(--brand-teal), var(--brand-navy));
+  color: var(--white);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.chatbot-send-button:hover {
+  background: linear-gradient(135deg, #0f766e, #1e3a8a);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(13, 148, 136, 0.3);
+}
+
+.chatbot-send-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

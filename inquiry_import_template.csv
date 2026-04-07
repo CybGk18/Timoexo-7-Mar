@@ -1,0 +1,6 @@
+Name,Email,Phone,Type,Company,Country,Category,Message,Status
+John Doe,john@example.com,+1234567890,Buyer,ABC Corporation,USA,Electronics,Need 1000 units of LED displays,new
+Jane Smith,jane@example.com,+9876543210,Manufacturer,XYZ Manufacturing Ltd,UK,Furniture,Can produce 5000 chairs per month,contacted
+Bob Johnson,bob@example.com,+5551234567,Contact,Tech Solutions Inc,Canada,Software,General inquiry about services,new
+Alice Williams,alice@example.com,+4471234567,Buyer,Global Imports,Australia,Textiles,Looking for fabric suppliers,in_progress
+Mike Brown,mike@example.com,+8123456789,Manufacturer,Premium Products,India,Cosmetics,Specialized in organic skincare,new

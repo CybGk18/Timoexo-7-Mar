@@ -1,0 +1,75 @@
+
+
+
+Options -MultiViews
+DirectoryIndex index.html
+RewriteEngine On
+RewriteBase /
+
+# Serve prerendered HTML pages first
+RewriteRule ^about/?$ about.html [L,QSA]
+RewriteRule ^contact/?$ contact.html [L,QSA]
+RewriteRule ^services/?$ services.html [L,QSA]
+RewriteRule ^solutions/?$ solutions.html [L,QSA]
+RewriteRule ^resources/?$ resources.html [L,QSA]
+RewriteRule ^privacy-policy/?$ privacy-policy.html [L,QSA]
+RewriteRule ^terms-and-conditions/?$ terms-and-conditions.html [L,QSA]
+
+# Serve static assets directly if they exist
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Allow backend/API routes to pass through
+RewriteCond %{REQUEST_URI} ^/(server|backend|api)/ [NC]
+RewriteRule ^ - [L]
+
+# SPA fallback for any remaining client-side routes
+RewriteRule ^ index.html [L]
+
+# Set proper MIME types
+<IfModule mod_mime.c>
+    AddType application/javascript .js
+    AddType text/css .css
+    AddType image/svg+xml .svg
+    AddType application/json .json
+</IfModule>
+
+# Enable compression for better performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
+# Cache static assets for better performance
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType application/pdf "access plus 1 month"
+    ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# CORS headers for API requests
+<IfModule mod_headers.c>
+    <FilesMatch "\.(php)$">
+        Header always set Access-Control-Allow-Origin "*"
+        Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+    </FilesMatch>
+</IfModule>
+
+# Handle preflight OPTIONS requests
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]

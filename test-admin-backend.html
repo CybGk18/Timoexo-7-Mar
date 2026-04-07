@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Backend Testing</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .info {
+            color: #17a2b8;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .output {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        .credentials {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ffc107;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Admin Backend Testing Tool</h1>
+        
+        <div class="credentials">
+            <strong>Default Admin Credentials:</strong><br>
+            Username: <code>admin</code><br>
+            Password: <code>admin123</code>
+        </div>
+
+        <!-- Test 1: Database Connection -->
+        <div class="test-section">
+            <h2>1. Database Connection Test</h2>
+            <button onclick="testDatabaseConnection()">Test Database Connection</button>
+            <div id="dbOutput" class="output"></div>
+        </div>
+
+        <!-- Test 2: Admin User Check -->
+        <div class="test-section">
+            <h2>2. Admin User Check</h2>
+            <button onclick="testAdminUser()">Check Admin User</button>
+            <div id="adminUserOutput" class="output"></div>
+        </div>
+
+        <!-- Test 3: Admin Login -->
+        <div class="test-section">
+            <h2>3. Admin Login Test</h2>
+            <input type="text" id="username" placeholder="Username" value="admin">
+            <input type="password" id="password" placeholder="Password" value="admin123">
+            <button onclick="testLogin()">Test Login</button>
+            <div id="loginOutput" class="output"></div>
+        </div>
+
+        <!-- Test 4: Session Check -->
+        <div class="test-section">
+            <h2>4. Session Check</h2>
+            <button onclick="checkSession()">Check Session</button>
+            <div id="sessionOutput" class="output"></div>
+        </div>
+
+        <!-- Test 5: Admin Endpoints -->
+        <div class="test-section">
+            <h2>5. Admin Endpoints Test</h2>
+            <button onclick="testBlogsEndpoint()">Test Blogs Admin</button>
+            <button onclick="testCommentsEndpoint()">Test Comments Admin</button>
+            <button onclick="testMediaEndpoint()">Test Media Admin</button>
+            <div id="endpointsOutput" class="output"></div>
+        </div>
+
+        <!-- Test 6: Logout -->
+        <div class="test-section">
+            <h2>6. Logout Test</h2>
+            <button onclick="testLogout()">Test Logout</button>
+            <div id="logoutOutput" class="output"></div>
+        </div>
+
+        <!-- Test All -->
+        <div class="test-section">
+            <h2>Run All Tests</h2>
+            <button onclick="runAllTests()" style="background: #28a745; font-size: 16px; padding: 12px 30px;">
+                🚀 Run All Tests
+            </button>
+            <div id="allTestsOutput" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        const baseURL = window.location.origin;
+        
+        function log(elementId, message, type = 'info') {
+            const output = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#333';
+            output.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearLog(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        async function testDatabaseConnection() {
+            clearLog('dbOutput');
+            log('dbOutput', '🔍 Testing database connection...', 'info');
+            
+            try {
+                const response = await fetch(`${baseURL}/server/test_db_connection.php`);
+                const text = await response.text();
+                
+                if (response.ok) {
+                    log('dbOutput', '✓ Response received', 'success');
+                    log('dbOutput', text, 'info');
+                } else {
+                    log('dbOutput', `✗ HTTP Error: ${response.status}`, 'error');
+                    log('dbOutput', text, 'error');
+                }
+            } catch (error) {
+                log('dbOutput', `✗ Connection Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAdminUser() {
+            clearLog('adminUserOutput');
+            log('adminUserOutput', '🔍 Checking admin user...', 'info');
+            
+            try {
+                const response = await fetch(`${baseURL}/backend/test_admin_backend.php`);
+                const text = await response.text();
+                
+                if (response.ok) {
+                    log('adminUserOutput', '✓ Response received', 'success');
+                    log('adminUserOutput', text, 'info');
+                } else {
+                    log('adminUserOutput', `✗ HTTP Error: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log('adminUserOutput', `✗ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testLogin() {
+            clearLog('loginOutput');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            log('loginOutput', `🔐 Attempting login with username: ${username}`, 'info');
+            
+            try {
+                const response = await fetch(`${baseURL}/server/auth-admin.php?action=login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    log('loginOutput', '✓ Login successful!', 'success');
+                    log('loginOutput', JSON.stringify(data, null, 2), 'success');
+                    
+                    // Store session info
+                    window.sessionData = data;
+                } else {
+                    log('loginOutput', `✗ Login failed: ${data.message}`, 'error');
+                    log('loginOutput', JSON.stringify(data, null, 2), 'error');
+                }
+            } catch (error) {
+                log('loginOutput', `✗ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkSession() {
+            clearLog('sessionOutput');
+            log('sessionOutput', '🔍 Checking session...', 'info');
+            
+            try {
+                const response = await fetch(`${baseURL}/server/auth-admin.php?action=check`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.authenticated) {
+                    log('sessionOutput', '✓ Session is active', 'success');
+                    log('sessionOutput', JSON.stringify(data, null, 2), 'success');
+                } else {
+                    log('sessionOutput', '✗ No active session', 'error');
+                    log('sessionOutput', JSON.stringify(data, null, 2), 'error');
+                }
+            } catch (error) {
+                log('sessionOutput', `✗ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testBlogsEndpoint() {
+            clearLog('endpointsOutput');
+            log('endpointsOutput', '🔍 Testing blogs admin endpoint...', 'info');
+            
+            try {
+                const response = await fetch(`${baseURL}/server/blogs-admin.php`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    log('endpointsOutput', '✓ Blogs endpoint working', 'success');
+                    log('endpointsOutput', `Found ${data.data.length} blog posts`, 'success');
+                } else {
+                    log('endpointsOutput', `✗ Blogs endpoint error: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log('endpointsOutput', `✗ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testCommentsEndpoint() {
+            log('endpointsOutput', '\n🔍 Testing comments admin endpoint...', 'info');
+            
+            try {
+                const response = await fetch(`${baseURL}/server/comments-admin.php`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    log('endpointsOutput', '✓ Comments endpoint working', 'success');
+                    log('endpointsOutput', `Found ${data.data.length} comments`, 'success');
+                } else {
+                    log('endpointsOutput', `✗ Comments endpoint error: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log('endpointsOutput', `✗ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testMediaEndpoint() {
+            log('endpointsOutput', '\n🔍 Testing media admin endpoint...', 'info');
+            
+            try {
+                const response = await fetch(`${baseURL}/server/media-admin.php`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    log('endpointsOutput', '✓ Media endpoint working', 'success');
+                    log('endpointsOutput', `Found ${data.data.length} media items`, 'success');
+                } else {
+                    log('endpointsOutput', `✗ Media endpoint error: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log('endpointsOutput', `✗ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testLogout() {
+            clearLog('logoutOutput');
+            log('logoutOutput', '🔍 Testing logout...', 'info');
+            
+            try {
+                const response = await fetch(`${baseURL}/server/auth-admin.php?action=logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    log('logoutOutput', '✓ Logout successful', 'success');
+                    log('logoutOutput', JSON.stringify(data, null, 2), 'success');
+                } else {
+                    log('logoutOutput', '✗ Logout failed', 'error');
+                }
+            } catch (error) {
+                log('logoutOutput', `✗ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function runAllTests() {
+            clearLog('allTestsOutput');
+            log('allTestsOutput', '🚀 Running all tests...', 'info');
+            log('allTestsOutput', '=' .repeat(60), 'info');
+            
+            // Test 1: Database
+            log('allTestsOutput', '\n1. Database Connection Test', 'info');
+            await testDatabaseConnection();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Test 2: Admin User
+            log('allTestsOutput', '\n2. Admin User Check', 'info');
+            await testAdminUser();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Test 3: Login
+            log('allTestsOutput', '\n3. Login Test', 'info');
+            await testLogin();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Test 4: Session
+            log('allTestsOutput', '\n4. Session Check', 'info');
+            await checkSession();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Test 5: Endpoints
+            log('allTestsOutput', '\n5. Admin Endpoints Test', 'info');
+            await testBlogsEndpoint();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testCommentsEndpoint();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testMediaEndpoint();
+            
+            log('allTestsOutput', '\n' + '=' .repeat(60), 'info');
+            log('allTestsOutput', '✓ All tests completed!', 'success');
+        }
+    </script>
+</body>
+</html>

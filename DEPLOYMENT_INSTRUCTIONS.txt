@@ -1,0 +1,45 @@
+DEPLOYMENT INSTRUCTIONS - CORS FIX
+
+1. UPLOAD THESE FILES TO YOUR SERVER (https://www.t-imoexo.com/):
+   - server/send_email.php
+   - server/buyer_inquiry.php
+   - server/manufacturer_inquiry.php
+   - server/db_config.php
+   - server/fix_cors.php (for testing)
+
+2. VERIFY CORS CONFIGURATION:
+   After uploading, test by making a request to:
+   https://www.t-imoexo.com/fix_cors.php
+
+   Using this JavaScript in your browser console:
+   fetch('https://www.t-imoexo.com/fix_cors.php', {
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/json',
+     },
+     body: JSON.stringify({test: 'data'})
+   })
+   .then(response => response.json())
+   .then(data => console.log('Success:', data))
+   .catch(error => console.error('Error:', error));
+
+3. CHECK RESPONSE HEADERS:
+   The response should include these headers:
+   - Access-Control-Allow-Origin: http://localhost:5175
+   - Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+   - Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-API-Key
+
+4. TEST FORM SUBMISSIONS:
+   After confirming CORS is working, test all forms:
+   - Contact form
+   - Buyer inquiry form
+   - Manufacturer inquiry form
+
+5. TROUBLESHOOTING:
+   If you still get CORS errors:
+   a. Check that files were uploaded correctly
+   b. Verify the $allowed_origins array includes 'http://localhost:5175'
+   c. Check server error logs for any PHP errors
+   d. Ensure db_config.php has correct database credentials
+
+IMPORTANT: The key fix is adding 'http://localhost:5175' to the $allowed_origins array in all PHP files.

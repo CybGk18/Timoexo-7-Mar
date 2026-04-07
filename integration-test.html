@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Frontend-Backend Integration Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .test-result {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      .success {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+      .error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        cursor: pointer;
+      }
+      #chatContainer {
+        margin-top: 20px;
+      }
+      .message {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 8px;
+      }
+      .user {
+        background-color: #0d9488;
+        color: white;
+        text-align: right;
+      }
+      .assistant {
+        background-color: #e0f2fe;
+        color: #1e293b;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Frontend-Backend Integration Test</h1>
+
+    <div>
+      <button id="testDirect">Test Direct Backend Connection</button>
+      <button id="testProxy">Test Proxy Connection</button>
+      <button id="testChat">Test Full Chat Flow</button>
+    </div>
+
+    <div id="results"></div>
+
+    <div id="chatContainer" style="display: none">
+      <h2>Chat Test</h2>
+      <div id="chatMessages"></div>
+      <form id="chatForm">
+        <input
+          type="text"
+          id="chatInput"
+          placeholder="Ask about import-export services..."
+          style="width: 70%; padding: 10px"
+        />
+        <button type="submit" style="width: 25%; padding: 10px">Send</button>
+      </form>
+    </div>
+
+    <script>
+      function addResult(message, isSuccess) {
+        const resultsDiv = document.getElementById("results");
+        const resultDiv = document.createElement("div");
+        resultDiv.className = `test-result ${isSuccess ? "success" : "error"}`;
+        resultDiv.innerHTML = message;
+        resultsDiv.appendChild(resultDiv);
+      }
+
+      async function testDirectConnection() {
+        try {
+          const response = await fetch("http://127.0.0.1:5000/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "What services do you offer?" }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            addResult(
+              `✅ Direct connection successful: ${data.response.substring(
+                0,
+                100
+              )}...`,
+              true
+            );
+          } else {
+            addResult(
+              `❌ Direct connection failed with status: ${response.status}`,
+              false
+            );
+          }
+        } catch (error) {
+          addResult(`❌ Direct connection error: ${error.message}`, false);
+        }
+      }
+
+      async function testProxyConnection() {
+        try {
+          // This would normally go through the proxy when served from the same origin
+          addResult(
+            `ℹ️ Proxy test would be conducted when served from the same origin as the frontend`,
+            true
+          );
+        } catch (error) {
+          addResult(`❌ Proxy connection error: ${error.message}`, false);
+        }
+      }
+
+      function displayMessage(content, role) {
+        const messagesDiv = document.getElementById("chatMessages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${role}`;
+        messageDiv.innerHTML = content;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }
+
+      async function testChatFlow() {
+        document.getElementById("chatContainer").style.display = "block";
+        document.getElementById("results").innerHTML = "";
+
+        // Clear previous messages
+        document.getElementById("chatMessages").innerHTML = "";
+
+        // Display welcome message
+        displayMessage(
+          "Hello! I am your T-imoexo assistant. How can I help you with import-export services today?",
+          "assistant"
+        );
+      }
+
+      document
+        .getElementById("testDirect")
+        .addEventListener("click", testDirectConnection);
+      document
+        .getElementById("testProxy")
+        .addEventListener("click", testProxyConnection);
+      document
+        .getElementById("testChat")
+        .addEventListener("click", testChatFlow);
+
+      document
+        .getElementById("chatForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const input = document.getElementById("chatInput");
+          const message = input.value.trim();
+
+          if (!message) return;
+
+          // Display user message
+          displayMessage(message, "user");
+          input.value = "";
+
+          // Show typing indicator
+          const typingIndicator = document.createElement("div");
+          typingIndicator.id = "typing";
+          typingIndicator.className = "message assistant";
+          typingIndicator.innerHTML = "Thinking...";
+          document.getElementById("chatMessages").appendChild(typingIndicator);
+
+          try {
+            const response = await fetch("http://127.0.0.1:5000/chat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ message }),
+            });
+
+            // Remove typing indicator
+            document.getElementById("typing").remove();
+
+            if (response.ok) {
+              const data = await response.json();
+              displayMessage(data.response, "assistant");
+            } else {
+              displayMessage(
+                "Sorry, I encountered an error processing your request.",
+                "assistant"
+              );
+            }
+          } catch (error) {
+            // Remove typing indicator
+            document.getElementById("typing").remove();
+            displayMessage(
+              "Could not connect to the AI service. Please make sure the backend is running.",
+              "assistant"
+            );
+          }
+        });
+    </script>
+  </body>
+</html>

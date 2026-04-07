@@ -1,0 +1,2 @@
+- [x] Add Message / Requirements field to Contact Information section in InquiryDetail.tsx for Contact Inquiries
+- [x] Remove the separate Message / Requirements card to avoid duplication
